@@ -3,8 +3,8 @@ testdata_dir = "testdata"
 tmp_dir = "build"
 
 [build]
-args_bin = ["-port=8067", "-log=json", "2>&1", "| humanlog -i -truncate=false"]
-bin = "./build/app"
+args_bin = ["-port=8068", "-log=json", "| humanlog"]
+entrypoint = "./build/app"
 pre_cmd = []
 cmd = "cmake --build build"
 post_cmd = []

@@ -151,8 +151,6 @@ void slog_info_impl(const char *msg, ...);
 void slog_warn_impl(const char *msg, ...);
 void slog_error_impl(const char *msg, ...);
 
-void slog_log_va(slog_logger *logger, slog_level level, const char *msg, const char *file, int line, const char *func, va_list args);
-
 // Convenience macros that auto-append NULL
 #define slog_log(logger, level, ...) slog_log_va(logger, level, __VA_ARGS__, NULL)
 #define slog_log_debug(logger, ...) slog_log_debug_impl(logger, __VA_ARGS__, NULL)
@@ -405,7 +403,7 @@ void slog_destroy(slog_logger *logger) {
 }
 
 // Core logging function
-void slog_log_va(slog_logger *logger, slog_level level, const char *msg, 
+static void slog_log_va(slog_logger *logger, slog_level level, const char *msg, 
                          const char *file, int line, const char *func, va_list args) {
     if (!logger || !logger->handler) return;
     

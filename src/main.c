@@ -23,19 +23,27 @@ void usage(FILE *stream)
     flag_print_options(stream);
 }
 
-// In user's application
-void handle_log(LogLevel level, const char *file, int line,
+void handle_ecewo_log(LogLevel level, const char *file, int line,
                   const char *fmt, va_list args) {
-  // char msg[1024];
-  // vsnprintf(msg, sizeof(msg), fmt, args);
+  char msg[1024];
+  vsnprintf(msg, sizeof(msg), fmt, args);
 
-// void slog_log_va(slog_logger *logger, slog_level level, const char *msg, const char *file, int line, const char *func, va_list args);
-    slog_logger *logger = slog_get_default();
-  slog_log_va(logger, (slog_level)level, fmt, file, line, NULL, args);
+  slog_logger *logger = slog_get_default();
+  if (!logger) return;
 
-  // Output as JSON, send to syslog, file, etc.
-  // printf("{\"level\":%d,\"file\":\"%s\",\"line\":%d,\"msg\":\"%s\"}\n",
-  //        level, file, line, msg);
+  slog_record record = {0};
+  record.time = time(NULL);
+  record.message = msg;
+  record.level = (slog_level)level;
+  record.file = file;
+  record.line = line;
+  record.function = NULL;
+  record.attrs = NULL;
+  record.attr_count = 0;
+
+  if (logger->handler && logger->handler->handle) {
+    logger->handler->handle(logger->handler, &record);
+  }
 }
 
 
@@ -65,8 +73,8 @@ int main(int argc, char *argv[]) {
     slog_logger *logger = slog_new(log_handler);
     slog_set_default(logger);
 
-    ecewo_set_log_handler(handle_log);
-    ecewo_set_log_level(LOG_LEVEL_DEBUG);
+    ecewo_set_log_handler(handle_ecewo_log);
+    ecewo_set_log_level(LOG_LEVEL_INFO);
 
     int err;
     int backlog = 0;

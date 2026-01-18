@@ -85,8 +85,6 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    // fflush(stderr);
-
     slog_info("Server started",
              slog_int("port", *port)
              );

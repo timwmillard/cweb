@@ -1,9 +1,7 @@
-#define LOG_INFO(fmt, ...) \
-  printf("[MY_INFO] " fmt "\n", ##__VA_ARGS__)
-
-#include "ecewo.h"
 #include <stdio.h>
 #include <stdint.h>
+
+#include "ecewo.h"
 
 #define SLOG_IMPLEMENTATION
 #include "slog.h"
@@ -25,27 +23,18 @@ void usage(FILE *stream)
 
 void handle_ecewo_log(LogLevel level, const char *file, int line,
                   const char *fmt, va_list args) {
-  char msg[1024];
-  vsnprintf(msg, sizeof(msg), fmt, args);
+    char msg[1024];
+    vsnprintf(msg, sizeof(msg), fmt, args);
 
-  slog_logger *logger = slog_get_default();
-  if (!logger) return;
-
-  slog_record record = {0};
-  record.time = time(NULL);
-  record.message = msg;
-  record.level = (slog_level)level;
-  record.file = file;
-  record.line = line;
-  record.function = NULL;
-  record.attrs = NULL;
-  record.attr_count = 0;
-
-  if (logger->handler && logger->handler->handle) {
-    logger->handler->handle(logger->handler, &record);
-  }
+    slog_logger *logger = slog_get_default();
+    slog_log_impl(logger, (slog_level)level, msg, 
+            slog_bool("ecewo_log", true),
+#ifdef DEBUG
+            slog_string("file", file),
+            slog_int("line", line),
+#endif
+            NULL);
 }
-
 
 int main(int argc, char *argv[]) {
     bool        *help = flag_bool("help", false, "Print this help to stdout and exit with 0");
@@ -73,8 +62,8 @@ int main(int argc, char *argv[]) {
     slog_logger *logger = slog_new(log_handler);
     slog_set_default(logger);
 
-    ecewo_set_log_handler(handle_ecewo_log);
-    ecewo_set_log_level(LOG_LEVEL_INFO);
+    server_set_log_handler(handle_ecewo_log);
+    server_set_log_level(LOG_LEVEL_INFO);
 
     int err;
     int backlog = 0;

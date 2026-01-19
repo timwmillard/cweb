@@ -20,22 +20,31 @@ file(DOWNLOAD
   ${CMAKE_SOURCE_DIR}/vendor/flag.h
 )
 
-FetchContent_Declare(
-  sqlite3
-  URL https://sqlite.org/2025/sqlite-amalgamation-3500400.zip
-  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-)
+# Download SQLite amalgamation to vendor folder
+set(SQLITE_VERSION 3500400)
+set(SQLITE_YEAR 2025)
+set(SQLITE_URL "https://sqlite.org/${SQLITE_YEAR}/sqlite-amalgamation-${SQLITE_VERSION}.zip")
+set(SQLITE_ARCHIVE "${CMAKE_BINARY_DIR}/sqlite-amalgamation-${SQLITE_VERSION}.zip")
 
-FetchContent_MakeAvailable(ecewo sqlite3)
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/vendor/sqlite3.c")
+  file(DOWNLOAD ${SQLITE_URL} ${SQLITE_ARCHIVE})
+  file(ARCHIVE_EXTRACT INPUT ${SQLITE_ARCHIVE} DESTINATION ${CMAKE_BINARY_DIR})
+  file(COPY
+    ${CMAKE_BINARY_DIR}/sqlite-amalgamation-${SQLITE_VERSION}/sqlite3.c
+    ${CMAKE_BINARY_DIR}/sqlite-amalgamation-${SQLITE_VERSION}/sqlite3.h
+    DESTINATION ${CMAKE_SOURCE_DIR}/vendor
+  )
+endif()
+
+FetchContent_MakeAvailable(ecewo)
 
 add_executable(${PROJECT_NAME}
   src/main.c
-  ${sqlite3_SOURCE_DIR}/sqlite3.c
+  ${CMAKE_SOURCE_DIR}/vendor/sqlite3.c
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/vendor
-  ${sqlite3_SOURCE_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ecewo)

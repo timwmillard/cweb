@@ -9,11 +9,10 @@
 #define FLAG_IMPLEMENTATION
 #include "flag.h"
 
-#define VERSION "0.0.1"
+#include "cweb.h"
 
-void hello_world(Req *req, Res *res) {
-  send_json(res, OK, "{\"name\": \"Tim Millard\"}\n");
-}
+#include "handlers.c"
+
 void usage(FILE *stream)
 {
     fprintf(stream, "Usage: ./example [OPTIONS] [--] [ARGS]\n");
@@ -34,6 +33,10 @@ void handle_ecewo_log(LogLevel level, const char *file, int line,
             slog_int("line", line),
 #endif
             NULL);
+}
+
+void routes() {
+    get("/health", health);
 }
 
 int main(int argc, char *argv[]) {
@@ -78,7 +81,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    get("/", hello_world);
+    routes();
 
     if (server_listen(*port) != 0) {
         fprintf(stderr, "Failed to start server\n");

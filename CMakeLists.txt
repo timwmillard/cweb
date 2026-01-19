@@ -21,8 +21,8 @@ file(DOWNLOAD
 )
 
 # Download SQLite amalgamation to vendor folder
-set(SQLITE_VERSION 3500400)
-set(SQLITE_YEAR 2025)
+set(SQLITE_VERSION 3510200)
+set(SQLITE_YEAR 2026)
 set(SQLITE_URL "https://sqlite.org/${SQLITE_YEAR}/sqlite-amalgamation-${SQLITE_VERSION}.zip")
 set(SQLITE_ARCHIVE "${CMAKE_BINARY_DIR}/sqlite-amalgamation-${SQLITE_VERSION}.zip")
 

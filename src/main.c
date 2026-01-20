@@ -28,10 +28,10 @@ void handle_ecewo_log(LogLevel level, const char *file, int line,
     slog_logger *logger = slog_get_default();
     slog_log_impl(logger, (slog_level)level, msg, 
             slog_bool("ecewo_log", true),
-#ifdef DEBUG
+            #ifdef DEBUG
             slog_string("file", file),
             slog_int("line", line),
-#endif
+            #endif // DEBUG
             NULL);
 }
 
